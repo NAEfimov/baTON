@@ -1,6 +1,8 @@
 package main
 
 import (
+	"baton/internal/database"
+	"baton/internal/repository"
 	"encoding/json"
 	"io"
 	"log"
@@ -16,6 +18,10 @@ func main() {
 		log.Fatal("BOT_TOKEN required")
 	}
 
+	// Initialize database
+    database.InitDB("./baTON.db") // Creates baTON.db in project root
+    database.RunMigrations()
+
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 
 	http.HandleFunc("/webhook", handleWebhook)
@@ -28,6 +34,27 @@ func main() {
 func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	body, _ := io.ReadAll(r.Body)
 	defer r.Body.Close()
+
+	var update struct {
+        Message struct {
+            From struct {
+                ID       int64  `json:"id"`
+                Username string `json:"username"`
+            } `json:"from"`
+        } `json:"message"`
+    }
+    if err := json.Unmarshal(body, &update); err != nil {
+        log.Printf("Failed to unmarshal: %v", err)
+        w.WriteHeader(200)
+        return
+    }
+
+    if update.Message.From.ID != 0 {
+        if err := repository.CreateUser(update.Message.From.ID, update.Message.From.Username); err != nil {
+            log.Printf("Failed to save user: %v", err)
+        }
+    }
+	
 	log.Printf("update: %s\n", string(body))
 	w.WriteHeader(200)
 }
