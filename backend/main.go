@@ -2,7 +2,7 @@ package main
 
 import (
 	"baton/backend/internal/database"
-	"baton/backend/internal/telegram"
+	"baton/backend/handlers"
 	"bufio"
     // "encoding/json"
     // "io"
@@ -38,16 +38,11 @@ func main() {
     if botToken == "" {
         log.Fatal("BOT_TOKEN not found in config.env")
     }
-	
 	//Initialize database
 	log.Println("Initializing database...")
-	database.InitDB("./baTON.db") // Creates baTON.db in project root
-	log.Println("Initializing database...")
+	database.InitDB("./baTON.db")
 	database.RunMigrations()
-	log.Println("Initializing database...")
-	http.Handle("/", http.FileServer(http.Dir("./static")))
-	http.HandleFunc("/webhook", telegram.HandleWebhook)
-	http.HandleFunc("/init/verify", telegram.HandleVerify)
-	log.Println("Server listening on :8080")
+	handlers.SetupRoutes()
+    log.Println("Server listening on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

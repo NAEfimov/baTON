@@ -15,10 +15,8 @@ func InitDB(dbPath string) {
     if err != nil {
         log.Fatal("Failed to open database:", err)
     }
-
     if err = DB.Ping(); err != nil {
         log.Fatal("Failed to ping database:", err)
     }
-
     log.Println("Database connected")
 }
