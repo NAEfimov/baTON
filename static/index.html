@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <h2>Mini App MVP (no crypto)</h2>
+  <pre id="out"></pre>
+  <script>
+    const out = v => document.getElementById('out').textContent = JSON.stringify(v, null, 2);
+    const data = Telegram.WebApp.initData;
+    fetch('/init/verify', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({initData: data})
+    })
+    .then(r => r.json())
+    .then(out);
+  </script>
+</body>
+</html>
