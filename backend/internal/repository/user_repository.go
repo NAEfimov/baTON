@@ -1,7 +1,7 @@
 package repository
 
 import (
-    "baton/internal/database"
+    "baton/backend/internal/database"
     // "baton/internal/models"
 )
 
