@@ -30,7 +30,7 @@ export default function Candidate() {
       const completeProfile = {
         ...getResult,
         id: candidatePayload.telegram_id,
-        photoUrl: `https://i.pravatar.cc/400?u=${candidatePayload.telegram_id}`,
+        photoUrl: `https://t.me/i/userpic/320/${candidatePayload.username}.jpg`,
         telegramUsername: candidatePayload.username
       };
       

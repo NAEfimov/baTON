@@ -1,6 +1,6 @@
 export const candidatePayload = {
   "telegram_id": 213123124,
-  "username": "AlexLuthor135",
+  "username": "alexangelos",
   "name": "Alexandros Lappas",
   "skills": [
     "javascript",
@@ -15,7 +15,7 @@ export const candidatePayload = {
     "CSS"
   ],
   "years": 1,
-  "education": "Master’s in Navigation (Kherson National Maritime Academy);",
+  "education": "Master’s in Navigation (Kherson National Maritime Academy)",
   "experience": [
     {
       "company": "42 Wolfsburg",

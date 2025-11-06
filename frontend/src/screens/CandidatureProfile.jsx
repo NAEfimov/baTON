@@ -3,11 +3,31 @@ import "../css/CandidatureProfile.css";
 import GoBack from "../components/GoBack";
 import ExperienceCarousel from "../components/ExperienceCarousel";
 import ProfileActions from "../components/ProfileActions";
+import InfoPopup from "../components/InfoPopup";
 import { PrevIcon, NextIcon, TelegramIcon, VerifiedIcon } from "../components/Icons";
 
 export default function CandidatureProfile({ candidate, onNext, onPrevious, isFirst, isLast, matchingScore, yearsExperience, onSuperLike, onInfo, onShare, }) {
   const [[jobIndex, direction], setJobIndex] = useState([0, 0]);
+  const [popupContent, setPopupContent] = useState(null);
   const jobs = candidate.experience;
+
+  const handleShowLocation = () => {
+    setPopupContent({
+      title: "Location",
+      content: candidate.location || "Location not provided."
+    });
+  };
+
+  const handleShowEducation = () => {
+    setPopupContent({
+      title: "Education",
+      content: candidate.education || "Education details not provided."
+    });
+  };
+  
+  const handleClosePopup = () => {
+    setPopupContent(null);
+  };
 
   useEffect(() => {
     setJobIndex([0, 0]);
@@ -39,8 +59,8 @@ export default function CandidatureProfile({ candidate, onNext, onPrevious, isFi
       <div className="profile-header">
       <h2 className="profile-card-name">{candidate.name}</h2>
         <ProfileActions
-          onInfo={onInfo}
-          onShare={onShare}
+          onShowLocation={handleShowLocation}
+          onShowEducation={handleShowEducation}
           matchingScore={matchingScore}
           yearsExperience={yearsExperience}
         />
@@ -86,6 +106,13 @@ export default function CandidatureProfile({ candidate, onNext, onPrevious, isFi
         </div>
       </div>
       <GoBack />
+      {popupContent && (
+        <InfoPopup 
+          title={popupContent.title}
+          content={popupContent.content}
+          onClose={handleClosePopup}
+        />
+      )}
     </div>
   );
 }

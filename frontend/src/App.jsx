@@ -13,8 +13,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route element={<AppLayout />}>
-          <Route path="/candidate" element={<Candidate />} />
           <Route path="/recruiter" element={<Recruiter />} />
+          <Route path="/candidate" element={<Candidate />} />
         </Route>
       </Routes>
       <ToastContainer />

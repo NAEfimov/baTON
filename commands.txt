@@ -1,6 +1,10 @@
+#Command to connect ngrok locally
 ngrok http https://localhost:443
 
+#Command to activate ngrok URL and TeleBot token
 curl -F "url=https://<ngrok>/backend/webhook" \
      https://api.telegram.org/bot$BOT_TOKEN/setWebhook
 
+#Command to confirm whether webhook was registered or not
 curl https://api.telegram.org/bot<TOKEN>/getWebhookInfo
+

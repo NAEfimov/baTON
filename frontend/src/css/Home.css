@@ -13,6 +13,15 @@
     color: var(--tg-theme-text-color);
   }
   
+  .home-image {
+    width: 80%;
+    max-width: 90%;
+    height: auto;
+    border-radius: 12px;
+    object-fit: contain;
+    margin-bottom: 2rem;
+  }
+
   h1 {
     font-size: 1.8rem;
     font-weight: 700;
