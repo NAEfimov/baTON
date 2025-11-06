@@ -57,3 +57,26 @@ func GetCandidateByTelegramID(telegramID int64) (*models.Candidate, error) {
     _ = json.Unmarshal([]byte(expJSON), &c.Experience)
     return &c, nil
 }
+
+func GetAllCandidates() ([]*models.Candidate, error) {
+    rows, err := database.DB.Query(
+        `SELECT telegram_id, username, name, skills, matching_score, years, education, experience, location FROM candidates`,
+    )
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var candidates []*models.Candidate
+    for rows.Next() {
+        var c models.Candidate
+        var skillsJSON, expJSON string
+        if err := rows.Scan(&c.TelegramID, &c.Username, &c.Name, &skillsJSON, &c.MatchingScore, &c.Years, &c.Education, &expJSON, &c.Location); err != nil {
+            continue
+        }
+        _ = json.Unmarshal([]byte(skillsJSON), &c.Skills)
+        _ = json.Unmarshal([]byte(expJSON), &c.Experience)
+        candidates = append(candidates, &c)
+    }
+    return candidates, nil
+}

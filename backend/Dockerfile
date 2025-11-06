@@ -20,7 +20,7 @@ RUN apk add --no-cache sqlite-libs
 WORKDIR /app
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
+#USER appuser
 
 COPY --from=builder /app/out/main .
 

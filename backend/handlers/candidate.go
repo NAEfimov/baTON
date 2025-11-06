@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+    "sort"
 	"strconv"
 	"strings"
 )
@@ -22,7 +23,7 @@ func HandleCreateCandidateJSON(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "bad request", http.StatusBadRequest)
         return
     }
-    p.Skills = normalizeSkills(p.Skills)
+    p.Skills = NormalizeSkills(p.Skills)
     var expBuf bytes.Buffer
     if err := json.NewEncoder(&expBuf).Encode(p.Experience); err != nil {
         log.Printf("Encode experience error: %v", err)
@@ -53,7 +54,7 @@ func HandleCreateCandidateJSON(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func normalizeSkills(in []string) []string {
+func NormalizeSkills(in []string) []string {
 	seen := map[string]struct{}{}
 	out := make([]string, 0, len(in))
 	for _, s := range in {
@@ -106,4 +107,57 @@ func HandleGetCandidate(w http.ResponseWriter, r *http.Request) {
     }
     w.Header().Set("Content-Type", "application/json")
     _ = json.NewEncoder(w).Encode(dto)
+}
+
+func HandleGetMatchedCandidates(w http.ResponseWriter, r *http.Request) {
+    telegramIDStr := r.URL.Query().Get("telegram_id")
+    if telegramIDStr == "" {
+        http.Error(w, "telegram_id required", http.StatusBadRequest)
+        return
+    }
+    telegramID, _ := strconv.ParseInt(telegramIDStr, 10, 64)
+    vacancy, _ := repository.GetVacancyByTelegramID(telegramID)
+    if vacancy == nil {
+        http.Error(w, "vacancy not found", http.StatusNotFound)
+        return
+    }
+    candidates, _ := repository.GetAllCandidates()
+    type Match struct {
+        Candidate *models.Candidate
+        Score     float64
+    }
+    var matches []Match
+    vacancySkills := make(map[string]bool)
+    for _, s := range vacancy.Skills {
+        vacancySkills[s] = true
+    }
+    for _, c := range candidates {
+        matchCount := 0
+        for _, s := range c.Skills {
+            if vacancySkills[s] {
+                matchCount++
+            }
+        }
+        score := float64(matchCount) / float64(len(vacancy.Skills)) * 100
+        matches = append(matches, Match{c, score})
+    }
+    sort.Slice(matches, func(i, j int) bool {
+        return matches[i].Score > matches[j].Score
+    })
+    if len(matches) > 5 {
+        matches = matches[:5]
+    }
+    result := []map[string]any{}
+    for _, m := range matches {
+        result = append(result, map[string]any{
+            "name":           m.Candidate.Name,
+            "matching_score": m.Score,
+            "years":          m.Candidate.Years,
+            "education":      m.Candidate.Education,
+            "experience":     m.Candidate.Experience,
+            "location":       m.Candidate.Location,
+        })
+    }
+    w.Header().Set("Content-Type", "application/json")
+    _ = json.NewEncoder(w).Encode(result)
 }

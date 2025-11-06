@@ -1,0 +1,30 @@
+{
+  "telegram_id": 556677889,
+  "username": "AlexCode77",
+  "name": "Alexandra Schmidt",
+  "skills": ["javascript","typescript","docker","websockets","HTML","CSS","Python","SQL","React","Node.js"],
+  "years": 3,
+  "education": "Bachelor’s in Information Technology (University of Hamburg);",
+  "experience": [
+    {
+      "company": "TechWorks Hamburg",
+      "vacancy": "Software Engineer",
+      "highlights": [
+        "Built API endpoints with Node.js and Express",
+        "Dockerized multiple services for CI/CD",
+        "Implemented WebSocket-based real-time updates"
+      ]
+    },
+    {
+      "company": "Freelance",
+      "vacancy": "Web Developer",
+      "highlights": [
+        "Developed dynamic web pages with React",
+        "Enhanced performance and accessibility",
+        "Integrated SQL databases with web apps"
+      ]
+    }
+  ],
+  "location": "Hamburg, Germany",
+  "matching_score": 0
+}

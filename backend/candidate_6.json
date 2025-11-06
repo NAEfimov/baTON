@@ -1,0 +1,30 @@
+{
+  "telegram_id": 112233445,
+  "username": "LaraDev99",
+  "name": "Lara Müller",
+  "skills": ["javascript","sql","react","git","ruby","docker","websockets","HTML","Vue","Sass"],
+  "years": 1,
+  "education": "Master’s in Software Engineering (TU Berlin);",
+  "experience": [
+    {
+      "company": "DevHub Berlin",
+      "vacancy": "Frontend Intern",
+      "highlights": [
+        "Built reusable React components",
+        "Optimized CSS and HTML for responsive design",
+        "Assisted in API integration and testing"
+      ]
+    },
+    {
+      "company": "StartupLab",
+      "vacancy": "Full-Stack Trainee",
+      "highlights": [
+        "Implemented real-time features using WebSockets",
+        "Worked with Docker-based development environments",
+        "Automated deployment scripts"
+      ]
+    }
+  ],
+  "location": "Berlin, Germany",
+  "matching_score": 0
+}
