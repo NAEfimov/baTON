@@ -34,6 +34,7 @@ func HandleCreateVacancyJSON(w http.ResponseWriter, r *http.Request) {
     _ = json.NewEncoder(w).Encode(map[string]any{
         "ok": true,
         "telegram_id": p.TelegramID,
+        "username": p.Username,
     })
 }
 

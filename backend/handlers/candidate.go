@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	"baton/backend/internal/models"
-	"baton/backend/internal/repository"
-	"bytes"
-	"encoding/json"
-	"log"
-	"net/http"
+    "baton/backend/internal/models"
+    "baton/backend/internal/repository"
+    "bytes"
+    "encoding/json"
+    "log"
+    "net/http"
     "sort"
-	"strconv"
-	"strings"
+    "strconv"
+    "strings"
 )
 
 func HandleCreateCandidateJSON(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +30,7 @@ func HandleCreateCandidateJSON(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "encode experience error", http.StatusInternalServerError)
         return
     }
-    id, err := repository.CreateCandidate(
+    _, err := repository.CreateCandidate(
         p.TelegramID,
         p.Username,
         p.Name,
@@ -48,10 +48,10 @@ func HandleCreateCandidateJSON(w http.ResponseWriter, r *http.Request) {
     }
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(map[string]any{
-		"ok": true,
-		"id": id,
-	})
+    _ = json.NewEncoder(w).Encode(map[string]any{
+        "ok":       true,
+        "username": p.Username,
+    })
 }
 
 func NormalizeSkills(in []string) []string {
@@ -152,6 +152,7 @@ func HandleGetMatchedCandidates(w http.ResponseWriter, r *http.Request) {
     for _, m := range matches {
         result = append(result, map[string]any{
             "name":           m.Candidate.Name,
+            "username":       m.Candidate.Username,
             "matching_score": m.Score,
             "years":          m.Candidate.Years,
             "education":      m.Candidate.Education,
