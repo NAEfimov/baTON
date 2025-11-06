@@ -20,7 +20,7 @@ func CreateCandidate(
 ) (int64, error) {
 	bSkills, _ := json.Marshal(skills)
 	res, err := database.DB.Exec(
-		`INSERT INTO candidates (telegram_id, username, name, skills, matching_score, years, education, experience, location)
+		`INSERT OR REPLACE INTO candidates (telegram_id, username, name, skills, matching_score, years, education, experience, location)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		telegramID,
 		username,
