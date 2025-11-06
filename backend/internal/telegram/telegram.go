@@ -2,6 +2,7 @@ package telegram
 
 import (
     "baton/backend/internal/repository"
+    // "baton/backend/internal/blockchain"
     "bytes"
     "encoding/json"
     "fmt"
@@ -22,6 +23,17 @@ var awaitingVerifier = make(map[int64]struct {
     expIndex int
     expName  string
 })
+
+type verificationRequest struct {
+    CandidateID       int64
+    CandidateUsername string
+    ExperienceLabel   string
+    VerifierID        int64
+}
+
+var (
+    pendingVerifications = make(map[string]verificationRequest)
+)
 
 func init() {
     botToken = os.Getenv("BOT_TOKEN")
@@ -134,7 +146,55 @@ func handleMessage(userID int64, username, text string) {
         }
         verifierUsername := strings.TrimPrefix(text, "@")
         delete(awaitingVerifier, userID)
-        sendMessage(userID, fmt.Sprintf("✅ Verification request for '%s' will be sent to @%s\n(Smart contract integration pending)", info.expName, verifierUsername))
+        // log.Printf("Send message to: %v\n", userID)
+        sendMessage(userID, fmt.Sprintf("Verification request for '%s' will be sent to @%s\n(Smart contract integration pending)", info.expName, verifierUsername))
+        
+        {
+            verifierID, err := repository.GetTelegramIDByUsername(verifierUsername)
+            if err != nil {
+                log.Printf("WARN: verifier lookup failed: %v", err)
+                sendMessage(userID, "Technical error. Try again later.")
+                return
+            }
+            if verifierID == 0 {
+                sendMessage(userID, fmt.Sprintf("User @%s must start the bot first.", verifierUsername))
+                delete(awaitingVerifier, userID)
+                return
+            }
+            // sendMessage(verifierID, fmt.Sprintf("Verification request for '%s' will be sent to @%s\n(Smart contract integration pending)", info.expName, verifierUsername))
+
+            delete(awaitingVerifier, userID)
+
+            // verifierID, err := repository.GetTelegramIDByUsername(verifierUsername)
+            // if err != nil {
+            //     sendMessage(userID, "Technical error. Try again later.")
+            //     return
+            // }
+            // if verifierID == 0 {
+            //     sendMessage(userID, fmt.Sprintf("User @%s must start the bot first.", verifierUsername))
+            //     return
+            // }
+
+            reqID := fmt.Sprintf("%d_%d_%d", userID, verifierID, info.expIndex)
+            pendingVerifications[reqID] = verificationRequest{
+                CandidateID:       userID,
+                CandidateUsername: username,
+                ExperienceLabel:   info.expName,
+                VerifierID:        verifierID,
+            }
+
+            sendInlineKeyboard(
+                verifierID,
+                fmt.Sprintf("Approve verification for @%s (%s)?", username, info.expName),
+                [][]map[string]interface{}{
+                    {
+                        {"text": "✅ Yes", "callback_data": "approve:" + reqID},
+                        {"text": "❌ No", "callback_data": "reject:" + reqID},
+                    },
+                },
+            )
+            sendMessage(userID, fmt.Sprintf("Verification request sent to @%s.", verifierUsername))
+        }
     }
 }
 
@@ -154,8 +214,11 @@ func handleCallbackQuery(cb *struct {
 
     action := parts[0]
     param := parts[1]
+    key := parts[1]
 
-    if action == "verify" {
+    // if action == "verify" {
+    switch action {
+    case "verify":
         expIndex, _ := strconv.Atoi(param)
         candidate, _ := repository.GetCandidateByTelegramID(cb.From.ID)
         if candidate != nil && expIndex < len(candidate.Experience) {
@@ -165,6 +228,34 @@ func handleCallbackQuery(cb *struct {
                 expName  string
             }{expIndex, fmt.Sprintf("%s @ %s", exp.Vacancy, exp.Company)}
             sendMessage(cb.From.ID, "Send verifier's username (e.g., @username):")
+        }
+    case "approve", "reject":
+        req, ok := pendingVerifications[key]
+        if !ok {
+            sendMessage(cb.From.ID, "Request already handled or expired.")
+            return
+        }
+        if req.VerifierID != cb.From.ID {
+            sendMessage(cb.From.ID, "This request is not assigned to you.")
+            return
+        }
+        delete(pendingVerifications, key)
+
+        if action == "approve" {
+            sendMessage(cb.From.ID, "You approved the experience. Thanks!")
+            sendMessage(
+                req.CandidateID,
+                fmt.Sprintf("🎉 @%s approved your experience \"%s\".", cb.From.Username, req.ExperienceLabel),    
+            )
+
+            createContract(req.CandidateID)
+
+        } else {
+            sendMessage(cb.From.ID, "You rejected the experience.")
+            sendMessage(
+                req.CandidateID,
+                fmt.Sprintf("⛔ @%s rejected your experience \"%s\".", cb.From.Username, req.ExperienceLabel),
+            )
         }
     }
 }
@@ -197,6 +288,10 @@ func sendTelegramRequest(method string, payload map[string]interface{}) {
         return
     }
     defer resp.Body.Close()
+}
+
+func createContract(CandidateID int64) {
+	sendMessage(CandidateID, "Starting smart contract deploing\n")
 }
 
 func HandleVerify(w http.ResponseWriter, r *http.Request) {
