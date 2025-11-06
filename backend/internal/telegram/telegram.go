@@ -134,7 +134,25 @@ func handleMessage(userID int64, username, text string) {
         }
         verifierUsername := strings.TrimPrefix(text, "@")
         delete(awaitingVerifier, userID)
-        sendMessage(userID, fmt.Sprintf("✅ Verification request for '%s' will be sent to @%s\n(Smart contract integration pending)", info.expName, verifierUsername))
+        // log.Printf("Send message to: %v\n", userID)
+        sendMessage(userID, fmt.Sprintf("Verification request for '%s' will be sent to @%s\n(Smart contract integration pending)", info.expName, verifierUsername))
+        
+        {
+            verifierID, err := repository.GetTelegramIDByUsername(verifierUsername)
+            if err != nil {
+                log.Printf("WARN: verifier lookup failed: %v", err)
+                sendMessage(userID, "Technical error. Try again later.")
+                return
+            }
+            if verifierID == 0 {
+                sendMessage(userID, fmt.Sprintf("User @%s must start the bot first.", verifierUsername))
+                delete(awaitingVerifier, userID)
+                return
+            }
+            sendMessage(verifierID, fmt.Sprintf("Verification request for '%s' will be sent to @%s\n(Smart contract integration pending)", info.expName, verifierUsername))
+
+            delete(awaitingVerifier, userID)
+        }
     }
 }
 
