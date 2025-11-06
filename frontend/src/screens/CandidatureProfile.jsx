@@ -50,7 +50,6 @@ export default function CandidatureProfile({ candidate, onNext, onPrevious, isFi
       paginate(-1);
     }
   };
-  
   return (
     <div className="profile-card">
       <div className="profile-card-image-container">

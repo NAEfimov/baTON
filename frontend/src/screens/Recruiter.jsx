@@ -1,4 +1,3 @@
-// src/screens/Recruiter.jsx
 import React, { useState } from "react";
 import CandidatureProfile from "./CandidatureProfile";
 import Loading from "../components/LoadingScreen";
@@ -15,27 +14,27 @@ export default function Recruiter() {
     setError(null);
 
     try {
-      // 1. POST the vacancy to the backend
       const postResponse = await fetch('/backend/vacancies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(vacancyPayload),
       });
       if (!postResponse.ok) throw new Error(`POST /vacancies failed: ${postResponse.status}`);
-      console.log("POST /vacancies successful.");
-
-      // 2. GET the matched candidates using the recruiter's ID
       const idToFetch = vacancyPayload.telegram_id;
       const getResponse = await fetch(`/backend/vacancies/matches?telegram_id=${idToFetch}`);
       if (!getResponse.ok) throw new Error(`GET /vacancies/matches failed: ${getResponse.status}`);
 
       const fetchedCandidates = await getResponse.json();
-      console.log("GET /vacancies/matches successful. Fetched profiles:", fetchedCandidates);
-
-      // 3. Update state with the fetched candidates
       if (fetchedCandidates && fetchedCandidates.length > 0) {
-        setMatchedCandidates(fetchedCandidates);
-        setCurrentIndex(0); // Reset carousel to the first profile
+        const candidatesWithPhotos = fetchedCandidates.map(candidate => {
+          const uniqueIdentifier = candidate.username;
+          return {
+            ...candidate,
+            photoUrl: `https://t.me/i/userpic/320/${uniqueIdentifier}.jpg`
+          };
+        });        
+        setMatchedCandidates(candidatesWithPhotos);
+        setCurrentIndex(0);
       } else {
         setError("No matching candidates found.");
       }
@@ -55,35 +54,11 @@ export default function Recruiter() {
   const handlePrevious = () => {
     setCurrentIndex(prevIndex => Math.max(prevIndex - 1, 0));
   };
-
-  const handleDislike = (e) => {
-    e.stopPropagation();
-    const currentCandidate = matchedCandidates[currentIndex];
-    console.log("Disliked:", currentCandidate.name);
-  };
   
-  const handleSuperLike = (e) => {
-    e.stopPropagation();
-    const currentCandidate = matchedCandidates[currentIndex];
-    console.log("Super-liked:", currentCandidate.name);
-  };
-
-  const handleLike = (e) => {
-    e.stopPropagation();
-    const currentCandidate = matchedCandidates[currentIndex];
-    console.log("Liked:", currentCandidate.name);
-  };
-
   const handleInfo = (e) => {
     e.stopPropagation();
     const currentCandidate = matchedCandidates[currentIndex];
     alert(`More info about ${currentCandidate.name}`);
-  };
-
-  const handleShare = (e) => {
-    e.stopPropagation();
-    const currentCandidate = matchedCandidates[currentIndex];
-    alert(`Share ${currentCandidate.name}'s profile`);
   };
 
   if (isLoading) {
@@ -120,11 +95,7 @@ export default function Recruiter() {
         isLast={isLast}
         matchingScore={currentCandidate.matching_score}
         yearsExperience={currentCandidate.years}
-        onDislike={handleDislike}
-        onSuperLike={handleSuperLike}
-        onLike={handleLike}
         onInfo={handleInfo}
-        onShare={handleShare}
       />
     </div>
   );

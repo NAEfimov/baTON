@@ -32,9 +32,7 @@ export default function Candidate() {
         id: candidatePayload.telegram_id,
         photoUrl: `https://t.me/i/userpic/320/${candidatePayload.username}.jpg`,
         telegramUsername: candidatePayload.username
-      };
-      
-      console.log("Augmented profile for UI:", completeProfile);
+      };      
       setFetchedProfile(completeProfile);
 
     } catch (error) {
