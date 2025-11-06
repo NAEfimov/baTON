@@ -16,9 +16,11 @@ type ExperienceItem struct {
     Company    string   `json:"company"`
     Vacancy    string   `json:"vacancy"`
     Highlights []string `json:"highlights"`
+    Verified   bool     `json:"verified"`
 }
 
 type CandidatePublicDTO struct {
+    Username      string           `json:"username"`
     Name          string           `json:"name"`
     MatchingScore float64          `json:"matching_score"`
     Years         int              `json:"years"`

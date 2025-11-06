@@ -98,6 +98,7 @@ func HandleGetCandidate(w http.ResponseWriter, r *http.Request) {
         return
     }
     dto := models.CandidatePublicDTO{
+        Username:      candidate.Username,
         Name:          candidate.Name,
         MatchingScore: candidate.MatchingScore,
         Years:         candidate.Years,
