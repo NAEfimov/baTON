@@ -15,7 +15,7 @@ import (
 	"github.com/xssnick/tonutils-go/tvm/cell"
 )
  
-func DeployContract() {
+func DeployContract() string {
 	
 	
 	client := liteclient.NewConnectionPool()
@@ -36,14 +36,14 @@ func DeployContract() {
 	block, err := api.CurrentMasterchainInfo(context.Background())
 	if err != nil {
 		log.Fatalln("CurrentMasterchainInfo err:", err.Error())
-		return
+		return ""
 	}
 
 
 	balance, err := w.GetBalance(context.Background(), block)
 	if err != nil {
 		log.Fatalln("GetBalance err:", err.Error())
-		return
+		return ""
 	}
 
 	fmt.Println(balance)
@@ -61,6 +61,7 @@ func DeployContract() {
 
 	fmt.Println("Deployed contract addr:", addr.String())
 
+	return addr.String()
 }
 
 
