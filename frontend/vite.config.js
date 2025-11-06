@@ -8,7 +8,7 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 8081,
     allowedHosts: [
-      "unrequitable-unsibilant-latina.ngrok-free.dev"
+      '.ngrok-free.dev'
     ],
   }
 })

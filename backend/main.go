@@ -9,15 +9,9 @@ import (
     "path/filepath"
 )
 
-var botToken string
-
 func main() {
 	log.Println("Starting application...")
 
-    botToken := os.Getenv("BOT_TOKEN")
-    if botToken == "" {
-        log.Fatal("FATAL: BOT_TOKEN environment variable not set. Check your .env file.")
-    }
     dbDir := "/backend/data"
     dbPath := filepath.Join(dbDir, "baTON.db")
 
