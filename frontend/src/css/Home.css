@@ -35,7 +35,7 @@
     border-radius: 1rem;
     box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.05);
     backdrop-filter: blur(12rem);
-    width: 100%;
+    width: 90%;
     max-width: 360px;
   }
   
