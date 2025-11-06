@@ -1,0 +1,20 @@
+import { Route, Routes } from 'react-router-dom';
+import Home from './screens/Home';
+import Candidate from './screens/Candidate';
+import Recruiter from './screens/Recruiter';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './css/index.css';
+
+export default function App() {
+  return (
+    <div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/candidate" element={<Candidate />} />
+        <Route path="/recruiter" element={<Recruiter />} />
+      </Routes>
+      <ToastContainer />
+    </div>
+  );
+}
