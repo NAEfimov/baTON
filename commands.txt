@@ -1,1 +1,6 @@
 ngrok http https://localhost:443
+
+curl -F "url=https://<ngrok>/backend/webhook" \
+     https://api.telegram.org/bot$BOT_TOKEN/setWebhook
+
+curl https://api.telegram.org/bot<TOKEN>/getWebhookInfo

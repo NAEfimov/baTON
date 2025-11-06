@@ -37,6 +37,18 @@ func init() {
     log.Printf("INFO: Telegram package initialized. Web App URL is: '%s'", webAppURL)
 }
 
+func sendReplyKeyboard(chatID int64, text string, buttons [][]map[string]interface{}) {
+    payload := map[string]interface{}{
+        "chat_id": chatID,
+        "text":    text,
+        "reply_markup": map[string]interface{}{
+            "keyboard":        buttons,
+            "resize_keyboard": true, // Makes the buttons fit nicely
+        },
+    }
+    sendTelegramRequest("sendMessage", payload)
+}
+
 func HandleWebhook(w http.ResponseWriter, r *http.Request) {
     body, _ := io.ReadAll(r.Body)
     defer r.Body.Close()
@@ -79,9 +91,10 @@ func handleMessage(userID int64, username, text string) {
     _ = repository.CreateUser(userID, username)
 
     if text == "/start" || text == "/register" {
+        // This is the structure for a ReplyKeyboardMarkup button
         buttons := [][]map[string]interface{}{
-            {
-                {
+            { // A single row of buttons
+                { // The first button
                     "text": "Open Web App",
                     "web_app": map[string]string{
                         "url": webAppURL,
@@ -89,7 +102,8 @@ func handleMessage(userID int64, username, text string) {
                 },
             },
         }
-        sendInlineKeyboard(userID, "Welcome! Click below to open the app:", buttons)
+        // --- CALL THE NEW FUNCTION HERE ---
+        sendReplyKeyboard(userID, "Welcome! Click below to open the app:", buttons)
         return
     }
 
