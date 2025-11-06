@@ -8,11 +8,10 @@ const BackArrowIcon = () => (
   </svg>
 );
 
-export default function GoBack({ text = "Return to role selection" }) {
+export default function GoBack({}) {
   return (
     <Link to="/" className="go-back-link">
       <BackArrowIcon />
-      {text}
     </Link>
   );
 }

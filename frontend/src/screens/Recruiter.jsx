@@ -1,57 +1,55 @@
 // src/screens/Recruiter.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CandidatureProfile from "./CandidatureProfile";
-import GoBack from "../components/GoBack";
-
-const candidateList = [
-  {
-    id: 213123124,
-    name: "Alexandros Lappas",
-    username: "AlexLuthor135",
-    photoUrl: "https://i.pravatar.cc/400?u=AlexLuthor135",
-    experience: [
-      { company: "42 Wolfsburg", vacancy: "Pedago Manager", highlights: ["Led the pedagogical team.", "Built a certificate generation platform.", "Automated peer evaluation."] },
-      { company: "42 Berlin", vacancy: "Pedago Intern", highlights: ["Prepared and facilitated bootcamp workshops.", "Developed automated monitoring tools.", "Built API solutions."] },
-    ],
-    matching_score: 92,
-    years: 2
-  },
-  {
-    id: 987654321,
-    name: "Elena Volkova",
-    username: "elena_volkova",
-    photoUrl: "https://i.pravatar.cc/400?u=elena_volkova",
-    experience: [
-      { company: "Yandex", vacancy: "Frontend Developer", highlights: ["Developed core UI features for Yandex.Music.", "Improved page load times by 30%.", "Mentored junior developers."] },
-      { company: "Acme Ltd.", vacancy: "Junior UI Engineer", highlights: ["Built reusable React components.", "Wrote unit and integration tests."] },
-    ],
-    matching_score: 93,
-    years: 3
-  },
-  {
-    id: 112233445,
-    name: "Ben Carter",
-    username: "ben_carter",
-    photoUrl: "https://i.pravatar.cc/400?u=ben_carter",
-    experience: [
-      { company: "Google", vacancy: "Backend Engineer", highlights: ["Worked on the Google Cloud Storage API.", "Designed and implemented a new caching layer."] },
-    ],
-    matching_score: 94,
-    years: 4
-  }
-];
+import Loading from "../components/LoadingScreen";
+import { vacancyPayload } from "../data/vacancy.js";
 
 export default function Recruiter() {
-  const [candidates, setCandidates] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [matchedCandidates, setMatchedCandidates] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  useEffect(() => {
-    // Simulating an API call
-    setCandidates(candidateList);
-  }, []);
+  const handleFindMatches = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // 1. POST the vacancy to the backend
+      const postResponse = await fetch('/backend/vacancies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vacancyPayload),
+      });
+      if (!postResponse.ok) throw new Error(`POST /vacancies failed: ${postResponse.status}`);
+      console.log("POST /vacancies successful.");
+
+      // 2. GET the matched candidates using the recruiter's ID
+      const idToFetch = vacancyPayload.telegram_id;
+      const getResponse = await fetch(`/backend/vacancies/matches?telegram_id=${idToFetch}`);
+      if (!getResponse.ok) throw new Error(`GET /vacancies/matches failed: ${getResponse.status}`);
+
+      const fetchedCandidates = await getResponse.json();
+      console.log("GET /vacancies/matches successful. Fetched profiles:", fetchedCandidates);
+
+      // 3. Update state with the fetched candidates
+      if (fetchedCandidates && fetchedCandidates.length > 0) {
+        setMatchedCandidates(fetchedCandidates);
+        setCurrentIndex(0); // Reset carousel to the first profile
+      } else {
+        setError("No matching candidates found.");
+      }
+
+    } catch (err) {
+      console.error("An error occurred:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleNext = () => {
-    setCurrentIndex(prevIndex => Math.min(prevIndex + 1, candidates.length - 1));
+    setCurrentIndex(prevIndex => Math.min(prevIndex + 1, matchedCandidates.length - 1));
   };
 
   const handlePrevious = () => {
@@ -60,58 +58,68 @@ export default function Recruiter() {
 
   const handleDislike = (e) => {
     e.stopPropagation();
-    console.log("Disliked:", singleCandidate.name);
-    setShowCard(false);
+    const currentCandidate = matchedCandidates[currentIndex];
+    console.log("Disliked:", currentCandidate.name);
   };
   
   const handleSuperLike = (e) => {
     e.stopPropagation();
-    console.log("Super-liked:", singleCandidate.name);
-    // Add logic here
-    setShowCard(false);
+    const currentCandidate = matchedCandidates[currentIndex];
+    console.log("Super-liked:", currentCandidate.name);
   };
 
   const handleLike = (e) => {
     e.stopPropagation();
-    console.log("Liked:", singleCandidate.name);
-    // Add logic here
-    setShowCard(false);
+    const currentCandidate = matchedCandidates[currentIndex];
+    console.log("Liked:", currentCandidate.name);
   };
 
   const handleInfo = (e) => {
     e.stopPropagation();
-    // Add logic here
-    alert(`More info about ${singleCandidate.name}`);
+    const currentCandidate = matchedCandidates[currentIndex];
+    alert(`More info about ${currentCandidate.name}`);
   };
 
   const handleShare = (e) => {
     e.stopPropagation();
-    // Add logic here
-    alert(`Share ${singleCandidate.name}'s profile`);
+    const currentCandidate = matchedCandidates[currentIndex];
+    alert(`Share ${currentCandidate.name}'s profile`);
   };
 
-  if (candidates.length === 0) {
-    return <div>Loading candidates...</div>;
+  if (isLoading) {
+    return <Loading message="Finding matches..." />;
   }
-
-  const currentCandidate = candidates[currentIndex];
+  if (error) {
+    return <div className="app-container">Error: {error}</div>;
+  }
+  if (matchedCandidates.length === 0) {
+    return (
+      <div className="app-container">
+        <div className="card">
+          <h1>Find Candidates</h1>
+          <p>Upload your vacancy to find the best matching talent.</p>
+          <button className="button" onClick={handleFindMatches}>
+            Find Matches
+          </button>
+        </div>
+      </div>
+    );
+  }
+  const currentCandidate = matchedCandidates[currentIndex];
   const isFirst = currentIndex === 0;
-  const isLast = currentIndex === candidates.length - 1;
+  const isLast = currentIndex === matchedCandidates.length - 1;
 
   return (
     <div>
       <CandidatureProfile 
         key={currentCandidate.id} 
         candidate={currentCandidate}
-        
         onNext={handleNext}
         onPrevious={handlePrevious}
         isFirst={isFirst}
         isLast={isLast}
-
         matchingScore={currentCandidate.matching_score}
         yearsExperience={currentCandidate.years}
-        
         onDislike={handleDislike}
         onSuperLike={handleSuperLike}
         onLike={handleLike}

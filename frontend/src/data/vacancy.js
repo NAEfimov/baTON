@@ -1,0 +1,17 @@
+export const vacancyPayload = {
+	"telegram_id": 7086366,
+	"username": "HR",
+	"skills": [
+		"javascript",
+		"sql",
+		"react",
+		"git",
+		"typescript",
+		"docker",
+		"websockets",
+		"ActiveMQ",
+		"HTML",
+		"Vue"
+	],
+	"job_description": "We are looking for a Frontend Developer to join our team. You will work on building and maintaining modern web applications using React, Vue, and TypeScript.\nThe ideal candidate has experience with JavaScript, HTML, CSS, and is familiar with Docker and WebSockets. Strong problem-solving skills and the ability to collaborate in a fast-paced environment are essential."
+}

@@ -24,7 +24,8 @@ export const candidatePayload = {
         "Led the pedagogical team and oversaw student progress in the core curriculum",
         "Built a certificate generation platform (reduced manual work by 15+ hours/month)",
         "Automated peer evaluation via dynamic real-time pairing (+35% throughput)"
-      ]
+      ],
+      "verified": false
     },
     {
       "company": "42 Berlin",
@@ -33,7 +34,8 @@ export const candidatePayload = {
         "Prepared and facilitated bootcamp workshops, project evaluations, and debugging sessions",
         "Developed automated monitoring tools (~30% efficiency improvement)",
         "Built API-based solutions that reduced manual evaluation by 20+ hours/week"
-      ]
+      ],
+      "verified": false
     },
     {
       "company": "Personal Project",
@@ -42,7 +44,8 @@ export const candidatePayload = {
         "Built a multiplayer platform on Django REST with secure auth and 2FA",
         "Added AI opponents, matchmaking, and game customization",
         "Implemented real-time Pong gameplay using WebSockets"
-      ]
+      ],
+      "verified": false
     },
     {
       "company": "Personal Project",
@@ -51,7 +54,8 @@ export const candidatePayload = {
         "Implemented a custom HTTP server in C/C++",
         "Initialized multiple servers and handled many clients concurrently",
         "Used asynchronous I/O to avoid blocking"
-      ]
+      ],
+      "verified": false
     },
     {
       "company": "Personal Project",
@@ -60,7 +64,8 @@ export const candidatePayload = {
         "Developed a Unix shell: command execution, environment, and job control",
         "Strengthened understanding of system calls and process management",
         "Improved knowledge of command interfaces and UNIX architecture"
-      ]
+      ],
+      "verified": false
     }
   ],
   "location": "Wolfsburg, Germany",

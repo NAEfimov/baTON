@@ -84,8 +84,8 @@ export default function CandidatureProfile({ candidate, onNext, onPrevious, isFi
             <NextIcon />
           </button>
         </div>
-        <GoBack />
       </div>
+      <GoBack />
     </div>
   );
 }

@@ -1,8 +1,7 @@
 .go-back-link {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 20px; 
+    top: 0px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -12,6 +11,7 @@
     color: var(--tg-theme-link-color, #2481cc);
     text-decoration: none;
     transition: opacity 0.15s ease;
+    z-index: 100;
   }
   
   .go-back-link:hover {
